@@ -3,8 +3,14 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass, asdict
 from typing import List
+import re
 
-from bs4 import BeautifulSoup
+try:
+    from bs4 import BeautifulSoup  # type: ignore
+    _HAVE_BS4 = True
+except Exception:
+    BeautifulSoup = None  # type: ignore
+    _HAVE_BS4 = False
 
 
 HTML_CONTENT = """<!doctype html>
@@ -77,7 +83,7 @@ class Event:
     description: str
 
 
-def parse_events_from_html(html: str) -> List[Event]:
+def _parse_with_bs4(html: str) -> List[Event]:
     soup = BeautifulSoup(html, "html.parser")
     events_section = soup.select_one("section.events")
     if not events_section:
@@ -107,6 +113,44 @@ def parse_events_from_html(html: str) -> List[Event]:
         events.append(event)
 
     return events
+
+
+def _strip_tags(text: str) -> str:
+    return re.sub(r"<[^>]+>", "", text).strip()
+
+
+def _parse_with_regex(html: str) -> List[Event]:
+    events: List[Event] = []
+
+    article_pattern = re.compile(r'<article[^>]*class="event"[^>]*data-id="([^"]+)"[^>]*>(.*?)</article>', re.DOTALL | re.IGNORECASE)
+    for event_id, body in article_pattern.findall(html):
+        title_match = re.search(r"<h3>(.*?)</h3>", body, re.DOTALL | re.IGNORECASE)
+        date_iso_match = re.search(r"<time[^>]*datetime=\"([^\"]+)\"[^>]*>(.*?)</time>", body, re.DOTALL | re.IGNORECASE)
+        location_match = re.search(r"<span[^>]*class=\"location\"[^>]*>(.*?)</span>", body, re.DOTALL | re.IGNORECASE)
+        price_match = re.search(r"<span[^>]*class=\"price\"[^>]*>(.*?)</span>", body, re.DOTALL | re.IGNORECASE)
+        link_match = re.search(r"<a[^>]*class=\"tickets\"[^>]*href=\"([^\"]+)\"", body, re.DOTALL | re.IGNORECASE)
+        desc_match = re.search(r"<p[^>]*class=\"desc\"[^>]*>(.*?)</p>", body, re.DOTALL | re.IGNORECASE)
+
+        event = Event(
+            event_id=event_id,
+            title=_strip_tags(title_match.group(1)) if title_match else "",
+            date_iso=date_iso_match.group(1) if date_iso_match else "",
+            date_text=_strip_tags(date_iso_match.group(2)) if date_iso_match else "",
+            location=_strip_tags(location_match.group(1)) if location_match else "",
+            price=_strip_tags(price_match.group(1)) if price_match else "",
+            details_url=link_match.group(1) if link_match else "",
+            description=_strip_tags(desc_match.group(1)) if desc_match else "",
+        )
+
+        events.append(event)
+
+    return events
+
+
+def parse_events_from_html(html: str) -> List[Event]:
+    if _HAVE_BS4 and BeautifulSoup is not None:
+        return _parse_with_bs4(html)
+    return _parse_with_regex(html)
 
 
 def main() -> None:

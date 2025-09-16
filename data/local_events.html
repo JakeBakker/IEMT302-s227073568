@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Local Events</title>
+    <style>
+      body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; }
+      .events { display: grid; gap: 1rem; }
+      .event { border: 1px solid #ddd; border-radius: 8px; padding: 1rem; }
+      .event h3 { margin: 0 0 .5rem; }
+      .meta { color: #555; font-size: .95rem; display: flex; gap: .75rem; flex-wrap: wrap; }
+      .desc { margin-top: .5rem; color: #333; }
+    </style>
+  </head>
+  <body>
+    <h1>What's happening nearby</h1>
+    <section class="events" aria-label="Upcoming local events">
+      <article class="event" data-id="e001">
+        <h3>Sunset Yoga in the Park</h3>
+        <div class="meta">
+          <time datetime="2025-09-20T18:30:00" class="date">Sat, Sep 20, 6:30 PM</time>
+          <span class="location">Riverside Park, Lawn B</span>
+          <span class="price">Free</span>
+          <a class="tickets" href="https://example.org/events/sunset-yoga" target="_blank" rel="noopener">Details</a>
+        </div>
+        <p class="desc">Bring a mat and water. All levels welcome.</p>
+      </article>
+
+      <article class="event" data-id="e002">
+        <h3>Farmers' Market</h3>
+        <div class="meta">
+          <time datetime="2025-09-21T09:00:00" class="date">Sun, Sep 21, 9:00 AM</time>
+          <span class="location">Old Town Square</span>
+          <span class="price">$</span>
+          <a class="tickets" href="https://example.org/events/farmers-market" target="_blank" rel="noopener">Details</a>
+        </div>
+        <p class="desc">Local produce, baked goods, and live music.</p>
+      </article>
+
+      <article class="event" data-id="e003">
+        <h3>Indie Film Night</h3>
+        <div class="meta">
+          <time datetime="2025-09-22T20:00:00" class="date">Mon, Sep 22, 8:00 PM</time>
+          <span class="location">Art House Cinema</span>
+          <span class="price">$$</span>
+          <a class="tickets" href="https://example.org/events/indie-film" target="_blank" rel="noopener">Details</a>
+        </div>
+        <p class="desc">Three short films by local directors + Q&A.</p>
+      </article>
+
+      <article class="event" data-id="e004">
+        <h3>Coffee & Code Meetup</h3>
+        <div class="meta">
+          <time datetime="2025-09-24T18:00:00" class="date">Wed, Sep 24, 6:00 PM</time>
+          <span class="location">Bean There Cafe</span>
+          <span class="price">Free</span>
+          <a class="tickets" href="https://example.org/events/coffee-code" target="_blank" rel="noopener">Details</a>
+        </div>
+        <p class="desc">Open discussion on Python and open source projects.</p>
+      </article>
+    </section>
+  </body>
+  </html>
+

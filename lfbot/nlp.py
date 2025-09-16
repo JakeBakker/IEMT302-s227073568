@@ -10,8 +10,6 @@ import dateparser
 
 
 class LostFoundNLP:
-    """Lightweight NLP layer to parse lost/found/search intents and key fields."""
-
     COLOR_WORDS = {
         "black",
         "white",
@@ -37,7 +35,7 @@ class LostFoundNLP:
     def __init__(self) -> None:
         try:
             self.nlp = spacy.load("en_core_web_sm")
-        except Exception as exc:  # pragma: no cover - runtime environment
+        except Exception as exc:
             raise RuntimeError(
                 "spaCy model 'en_core_web_sm' is not installed. Run: python -m spacy download en_core_web_sm"
             ) from exc
@@ -45,7 +43,6 @@ class LostFoundNLP:
         self._register_patterns()
 
     def _register_patterns(self) -> None:
-        # lost intent patterns
         self.matcher.add(
             "INTENT_LOST",
             [
@@ -53,8 +50,6 @@ class LostFoundNLP:
                 [{"LOWER": {"IN": ["lost", "misplaced"]}}],
             ],
         )
-
-        # found intent patterns
         self.matcher.add(
             "INTENT_FOUND",
             [
@@ -63,8 +58,6 @@ class LostFoundNLP:
                 [{"LOWER": "is"}, {"LOWER": "this"}, {"LOWER": {"IN": ["yours", "someone's", "someones"]}}],
             ],
         )
-
-        # search intent patterns
         self.matcher.add(
             "INTENT_SEARCH",
             [
@@ -75,13 +68,11 @@ class LostFoundNLP:
 
     def parse(self, text: str) -> Dict[str, Optional[str]]:
         doc = self.nlp(text)
-
         intent = self._infer_intent(doc)
         item = self._extract_item(doc)
         color = self._extract_color(doc)
         location = self._extract_location(doc)
         date_iso = self._extract_date_iso(doc)
-
         return {
             "intent": intent,
             "item": item,
@@ -99,7 +90,6 @@ class LostFoundNLP:
             return "found"
         if "INTENT_SEARCH" in labels:
             return "search"
-
         lowered = doc.text.lower()
         if re.search(r"\b(lost|misplaced|left behind)\b", lowered):
             return "lost"
@@ -117,7 +107,6 @@ class LostFoundNLP:
         ]
         if not candidate_nouns:
             return None
-        # Prefer the last noun chunk head as the item
         noun_chunks = list(doc.noun_chunks)
         if noun_chunks:
             head = noun_chunks[-1].root
@@ -130,7 +119,6 @@ class LostFoundNLP:
         for adj in adjectives:
             if adj in self.COLOR_WORDS:
                 return adj
-        # Color words can also be nouns (e.g., silver)
         for token in doc:
             if token.text.lower() in self.COLOR_WORDS:
                 return token.text.lower()
@@ -154,7 +142,6 @@ class LostFoundNLP:
                 parsed = dateparser.parse(ent.text)
                 if parsed:
                     return parsed.date().isoformat()
-        # Heuristic for words like yesterday/today
         lowered = doc.text.lower()
         if "yesterday" in lowered:
             return (datetime.utcnow().date()).isoformat()

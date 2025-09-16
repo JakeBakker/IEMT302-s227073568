@@ -4,10 +4,11 @@ import json
 import os
 from datetime import datetime
 from threading import Lock
-from typing import Dict, List, Optional
+from typing import Dict, List
 
 
-STORAGE_DIR = os.path.join(os.path.dirname(__file__), "data")
+STORAGE_DIR = os.path.join(os.path.dirname(__file__), "..", "data")
+STORAGE_DIR = os.path.abspath(STORAGE_DIR)
 STORAGE_PATH = os.path.join(STORAGE_DIR, "reports.json")
 _lock = Lock()
 
@@ -39,7 +40,6 @@ def add_report(record: Dict) -> None:
 
 
 def search_reports(criteria: Dict, limit: int = 5) -> List[Dict]:
-    """Naive scoring-based search over stored reports."""
     records = _read_all()
     target_type = criteria.get("type")
     desired_item = (criteria.get("item") or "").lower()

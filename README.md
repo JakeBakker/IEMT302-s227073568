@@ -14,8 +14,8 @@ The bot extracts core details and suggests likely matches based on item, color, 
 
 ### How it works (high level)
 
-- `nlp.py` uses spaCy and simple rules to infer intent and extract fields.
-- `storage.py` stores reports in a local JSON file and provides a naive scoring-based search.
+- `lfbot/nlp.py` uses spaCy and simple rules to infer intent and extract fields.
+- `lfbot/storage.py` stores reports in a local JSON file and provides a naive scoring-based search.
 - `bot.py` wires the Telegram message flow using `python-telegram-bot`.
 
 ### Requirements
@@ -73,10 +73,11 @@ The bot will start polling. Send your bot a message on Telegram. Try:
 
 ### File overview
 
-- `bot.py`: Telegram bot entrypoint and handlers.
-- `nlp.py`: spaCy-based parsing of intent and attributes.
-- `storage.py`: JSON persistence and naive search.
-- `config.py`: Environment configuration loader.
+- `bot.py`: Telegram bot entrypoint and handlers (single root-level .py as entry point).
+- `lfbot/nlp.py`: spaCy-based parsing of intent and attributes.
+- `lfbot/storage.py`: JSON persistence and naive search.
+- `lfbot/config.py`: Environment configuration loader.
 - `.env.example`: Template for required environment variables.
 - `requirements.txt`: Dependencies.
 - `.gitignore`: Excludes `.venv/` and other artifacts.
+- `examples/BeautifulSoup.py`: Moved example script (not part of the bot). 

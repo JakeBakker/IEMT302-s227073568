@@ -1,14 +1,18 @@
+#!/usr/bin/env python3
 from __future__ import annotations
 
 from typing import Dict
 from uuid import uuid4
 
+import spacy  # noqa: F401
+import telegram  # noqa: F401
+
 from telegram import Update
 from telegram.ext import Application, CommandHandler, ContextTypes, MessageHandler, filters
 
-from config import load_config
-from nlp import LostFoundNLP
-from storage import add_report, initialize_storage, search_reports
+from lfbot.config import load_config
+from lfbot.nlp import LostFoundNLP
+from lfbot.storage import add_report, initialize_storage, search_reports
 
 
 def _format_report(record: Dict) -> str:
